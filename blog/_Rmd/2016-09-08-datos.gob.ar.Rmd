@@ -180,7 +180,7 @@ presupuesto_2016 %>%
   group_by(jurisdiccion_desc) %>% 
   summarise_at(vars(starts_with("monto")), funs(sum))  ->
   presupuesto_2016_by_jurisdiccion
-ggplotly(
+
   ggplot(presupuesto_2016_by_jurisdiccion, aes(jurisdiccion_desc, monto_presupuestado)) +
     geom_bar(stat = "identity", fill = "#FF4040") +
     geom_bar(stat = "identity", aes(y = monto_pagado), fill = "#00BFFF") +
@@ -188,7 +188,6 @@ ggplotly(
     scale_y_continuous("Monto presupuestado (en millones)", labels = dollar_format(big.mark = ".", decimal.mark = ",")) +
     theme_foundation() +
     theme(axis.text.x = element_text(angle = 90, hjust = 1))
-)
 
   
 ```
