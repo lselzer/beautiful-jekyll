@@ -78,10 +78,10 @@ url-pretty: "lselzer.github.io"  # eg. "deanattali.com/beautiful-jekyll"
 # --- Misc --- #
 
 # Fill in your Disqus shortname (NOT the userid) if you want to support Disqus comments
-#disqus: ""
+disqus: "lselzer"
 
 # Fill in your Google Analytics ID to track your website using GA
-#google_analytics: ""
+google_analytics: "700718"
 
 # --- Don't need to touch anything below here (but you can if you want) --- #
 
@@ -89,7 +89,7 @@ url-pretty: "lselzer.github.io"  # eg. "deanattali.com/beautiful-jekyll"
 timezone: "America/Argentina/Ushuaia"
 markdown: kramdown
 highlighter: rouge
-permalink: /:year-:month-:day-:title/
+permalink: /blog/:year-:month-:day-:title/
 paginate: 5
 
 kramdown:
