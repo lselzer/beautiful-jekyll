@@ -99,7 +99,7 @@ Con organization_list() podemos ver todas instituciones del gobierno que hay
 provistos datos y otra información como cuantos datos y el número de usuarios.
 
 ```{r table, results='asis'}
-pander(organization_list(as = "table")[, c(1, 4)], style = "grid", split.tables = Inf)
+pander(organization_list(as = "table")[, c(1, 4)], split.tables = Inf)
 
 ```
 
