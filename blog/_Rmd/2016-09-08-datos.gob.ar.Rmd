@@ -3,6 +3,7 @@ title: "Accediendo a datos.gob.ar desde R"
 author: "Luciano Selzer"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: md_document
+html_widgets: true
 ---
 
 ```{r setup, include=FALSE}
@@ -58,7 +59,7 @@ ckan_info()
 
 Ahora podemos empezar por ver que datasets están disponibles
 
-```{r}
+```{r package-list}
 # Guardo los datasets porque después vamos a usar el nombre como id
 # Y son muy largos como para estar escribiendolos cada vez
 (datasets <- package_list())
@@ -81,7 +82,7 @@ que busca términos en los metadatos de los datasets.
 
 
 
-```{r}
+```{r package-search}
 package_search("presupuesto")
 ```
 
@@ -97,15 +98,15 @@ hay que tener una clave.
 Con organization_list() podemos ver todas instituciones del gobierno que hay
 provistos datos y otra información como cuantos datos y el número de usuarios.
 
-```{r, results='asis'}
-pander(organization_list(as = "table")[, 1:4])
+```{r table, results='asis'}
+pander(organization_list(as = "table")[, c(1, 4)], style = "grid", split.tables = Inf)
 
 ```
 
 Y usando `organization_show` y el hash de una organización en particular 
 podemos ver la información solo de esa.
 
-```{r}
+```{r organization-show}
 organization_show(id = "9737ede6-2aaf-4ddb-89ca-fe40f9aea73d")
 ```
 
@@ -114,14 +115,14 @@ general archivos con datos. Las búsquedas se realizan en el formato
 `clave:valor`. Las claves pueden se cualquiera que use para clasificar el 
 recurso. Estos son todos las posibles claves:
 
-```{r}
+```{r resourse-search}
 names(resource_search(q = "name:presupuesto")$results[[1]])
 ```
 
 Está claro que hay algunos que serán más útiles que otros. Por ejemplo, para
 buscar todos los recursos en formato CSV:
 
-```{r}
+```{r resource-csv}
 # Guardamos los resultados como tabla para que sea más fácil manipular
 csv <- resource_search(q = "format:csv", as = "table")[[2]]
 ```
@@ -130,7 +131,7 @@ Por defecto, la información mostrada es limitada. Pero si guardamos
 los resultados podemos extraer la url del archivo.
 
 
-```{r}
+```{r urls}
 csv$url
 ```
 
@@ -143,12 +144,12 @@ De igual manera se puede realizar con `packages`.
 package_show(datasets[[1]])$resources[[1]]$url
 ```
 
-Va a ser muy conviente ampliar o crear un nuevo paquete para que sea
+Va a ser muy conveniente ampliar o crear un nuevo paquete para que sea
 más sencillo encontrar estas cosas.
 
 Ahora voy a bajar el archivo de datos del presupuesto.
 
-```{r}
+```{r presupuesto}
 library("readr")
 library("dplyr")
 library("stringr")
@@ -161,7 +162,7 @@ URL <- csv$url[5]
 fil <- paste0("data/", basename(URL)) 
 if (!file.exists(fil)) download.file(URL, fil) 
 
-presupuesto_2016 <- read_csv(fil, locale = locale(decimal_mark = ","), )
+presupuesto_2016 <- read_csv(fil, locale = locale(decimal_mark = ","))
 
 # Eliminar un caracter extraño que indica el BOM (byte order mark)
 names(presupuesto_2016) <- str_replace(names(presupuesto_2016), "\uFEFF", "")
@@ -172,23 +173,24 @@ desagregada, estoy seguro que algún periodista de datos podrá sacarles mucho
 jugo. Toda la información sobre los campos del archivo la pueden encontrar
 [acá](https://github.com/gobabiertoAR/datasets-portal/blob/master/presupuesto/presupuesto-documentacion.md) 
 
-Dejo algúnos gráficos a modo de ejemplo.
+Dejo algunos gráficos a modo de ejemplo.
 
 
-```{r, warning=FALSE, fig.height=8}
+```{r, warning=FALSE, fig.height=8, echo = FALSE}
 presupuesto_2016 %>% 
   group_by(jurisdiccion_desc) %>% 
   summarise_at(vars(starts_with("monto")), funs(sum))  ->
   presupuesto_2016_by_jurisdiccion
 
-  ggplot(presupuesto_2016_by_jurisdiccion, aes(jurisdiccion_desc, monto_presupuestado)) +
+presupuesto_2016_plot  <- ggplot(presupuesto_2016_by_jurisdiccion,
+                                 aes(jurisdiccion_desc, monto_presupuestado)) +
     geom_bar(stat = "identity", fill = "#FF4040") +
     geom_bar(stat = "identity", aes(y = monto_pagado), fill = "#00BFFF") +
     scale_x_discrete("Jurisdicción") + 
     scale_y_continuous("Monto presupuestado (en millones)", labels = dollar_format(big.mark = ".", decimal.mark = ",")) +
     theme_foundation() +
     theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
+ggplotly(presupuesto_2016_plot)
   
 ```
 

@@ -10,12 +10,13 @@ KnitPost <- function(input, outfile, base.url="/") {
   # this function is a modified version of an example here:
   # http://jfisher-usgs.github.com/r/2012/07/03/knitr-jekyll/
   require(knitr);
+  require(brocks)
   opts_knit$set(base.url = base.url)
   fig.path <- paste0("blog/figures/", sub(".Rmd$", "", basename(input)), "/")
   opts_chunk$set(fig.path = fig.path)
   opts_chunk$set(fig.cap = "testing")
   render_jekyll()
-  knit(input, outfile, envir = parent.frame())
+  knit(input, outfile, envir = parent.frame(), encoding = "UTF-8")
 }
 
 for (infile in list.files("blog/_Rmd", pattern = "*.Rmd", full.names = TRUE)) {
@@ -26,5 +27,6 @@ for (infile in list.files("blog/_Rmd", pattern = "*.Rmd", full.names = TRUE)) {
   if (!file.exists(outfile) |
       file.info(infile)$mtime > file.info(outfile)$mtime) {
     KnitPost(infile, outfile)
+    htmlwidgets_deps(infile, always = TRUE)
   }
 }
