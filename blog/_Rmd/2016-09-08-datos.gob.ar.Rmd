@@ -98,7 +98,7 @@ hay que tener una clave.
 Con organization_list() podemos ver todas instituciones del gobierno que hay
 provistos datos y otra información como cuantos datos y el número de usuarios.
 
-```{r table, results='asis'}
+```{r table, results='asis', echo=FALSE}
 pander(organization_list(as = "table")[, c(1, 4)], split.tables = Inf)
 
 ```
