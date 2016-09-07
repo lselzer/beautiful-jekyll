@@ -1,0 +1,17 @@
+---
+layout: post
+title: "Use htmlwidgets with Jekyll, 3"
+author: "Vasilios Zachariadis"
+date: "1 March 2016"
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(screenshot.force = FALSE)
+```
+
+```{r, message=FALSE}
+library(plotly)
+data(economics, package = "ggplot2")
+plot_ly(economics, x = date, y = uempmed, type = "scatter", 
+  showlegend = FALSE, session = "knitr")
+```
